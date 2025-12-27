@@ -20,8 +20,8 @@ x402_facilitator_url  = "https://facilitator.ultravioletadao.xyz"
 x402_network          = "avalanche"
 x402_receiver_address = "0x0c9eEB46f822F2C61A7e2f29ddE971F0121b96eE"
 
-# Bingo Configuration
-card_price = "0.001"
+# Bingo Configuration - Price in USDC on Avalanche Mainnet
+card_price = "5"
 
 # Frontend Domain (for CORS)
 frontend_domain = "bingo.ultravioletadao.xyz"

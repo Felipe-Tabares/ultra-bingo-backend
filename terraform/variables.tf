@@ -59,9 +59,9 @@ variable "x402_receiver_address" {
 }
 
 variable "card_price" {
-  description = "Price per bingo card in USD"
+  description = "Price per bingo card in USDC (Avalanche Mainnet)"
   type        = string
-  default     = "0.001"
+  default     = "5"
 }
 
 variable "frontend_domain" {

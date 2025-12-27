@@ -40,8 +40,8 @@ export const config = {
     receiverAddress: process.env.X402_RECEIVER_ADDRESS,
   },
 
-  // Bingo
-  cardPrice: parseFloat(process.env.CARD_PRICE) || 0.001,
+  // Bingo - Price in USDC on Avalanche Mainnet
+  cardPrice: parseFloat(process.env.CARD_PRICE) || 5,
   maxCardsPerPurchase: 34, // Synced with frontend - max Fibonacci quantity
 
   // Valid Fibonacci quantities for purchase
