@@ -1,0 +1,43 @@
+# =============================================================================
+# Ultra Bingo - Terraform Variables Example
+# =============================================================================
+# Copy this file to terraform.tfvars and fill in your values
+# IMPORTANT: Never commit terraform.tfvars to version control!
+# =============================================================================
+
+# Project Configuration
+project_name = "ultra-bingo"
+environment  = "prod"
+aws_region   = "us-east-1"
+
+# Application Secrets (REQUIRED - CHANGE THESE!)
+jwt_secret     = "your-super-secret-jwt-key-change-this-in-production"
+admin_password = "YourSecureAdminPassword123!"
+admin_wallets  = "0x1234...your_wallet,0x5678...another_wallet"
+
+# x402 Payment Configuration
+x402_facilitator_url  = "https://facilitator.ultravioletadao.xyz"
+x402_network          = "avalanche"
+x402_receiver_address = "0x0c9eEB46f822F2C61A7e2f29ddE971F0121b96eE"
+
+# Bingo Configuration
+card_price = "0.001"
+
+# Frontend Domain (for CORS)
+frontend_domain = "bingo.ultravioletadao.xyz"
+
+# Lambda Configuration
+lambda_memory_size = 512
+lambda_timeout     = 30
+lambda_runtime     = "nodejs20.x"
+
+# DynamoDB Configuration
+dynamodb_billing_mode = "PAY_PER_REQUEST"
+
+# Tags
+tags = {
+  Project     = "ultra-bingo"
+  Environment = "prod"
+  ManagedBy   = "terraform"
+  Application = "UltravioletaDAO Bingo"
+}
