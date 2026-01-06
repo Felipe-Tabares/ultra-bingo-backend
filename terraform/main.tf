@@ -55,9 +55,13 @@ locals {
   # CORS configuration
   cors_origins = var.frontend_domain != "" ? [
     "https://${var.frontend_domain}",
+    "https://ultra-bingo-frontend-five.vercel.app",
+    "https://ultra-bingo-frontend.vercel.app",
     "http://localhost:5173",
     "http://localhost:3000"
   ] : [
+    "https://ultra-bingo-frontend-five.vercel.app",
+    "https://ultra-bingo-frontend.vercel.app",
     "http://localhost:5173",
     "http://localhost:3000"
   ]

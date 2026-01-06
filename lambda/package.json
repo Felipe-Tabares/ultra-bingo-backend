@@ -1,0 +1,36 @@
+{
+  "name": "ultra-bingo-lambda",
+  "version": "1.0.0",
+  "description": "Ultra Bingo Backend - AWS Lambda Handlers",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "package": "npm run build && cd dist && zip -r ../function.zip .",
+    "deploy": "npm run package && node scripts/deploy.js",
+    "deploy:api": "aws lambda update-function-code --function-name ultra-bingo-prod-api --zip-file fileb://function.zip",
+    "deploy:ws-connect": "aws lambda update-function-code --function-name ultra-bingo-prod-ws-connect --zip-file fileb://function.zip",
+    "deploy:ws-disconnect": "aws lambda update-function-code --function-name ultra-bingo-prod-ws-disconnect --zip-file fileb://function.zip",
+    "deploy:ws-message": "aws lambda update-function-code --function-name ultra-bingo-prod-ws-message --zip-file fileb://function.zip",
+    "deploy:stream": "aws lambda update-function-code --function-name ultra-bingo-prod-stream-processor --zip-file fileb://function.zip",
+    "deploy:all": "npm run package && npm run deploy:api && npm run deploy:ws-connect && npm run deploy:ws-disconnect && npm run deploy:ws-message && npm run deploy:stream",
+    "test": "node --test",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@aws-sdk/client-apigatewaymanagementapi": "^3.0.0",
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/lib-dynamodb": "^3.0.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.0",
+    "eslint": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "author": "UltravioletaDAO",
+  "license": "MIT"
+}

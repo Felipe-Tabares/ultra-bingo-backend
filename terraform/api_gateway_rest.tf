@@ -253,19 +253,21 @@ resource "aws_apigatewayv2_stage" "rest" {
   name        = var.environment
   auto_deploy = true
 
-  access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.api_gateway_rest.arn
-    format = jsonencode({
-      requestId      = "$context.requestId"
-      ip             = "$context.identity.sourceIp"
-      requestTime    = "$context.requestTime"
-      httpMethod     = "$context.httpMethod"
-      routeKey       = "$context.routeKey"
-      status         = "$context.status"
-      responseLength = "$context.responseLength"
-      errorMessage   = "$context.error.message"
-    })
-  }
+  # NOTE: access_log_settings requires API Gateway account-level CloudWatch role
+  # This can be enabled later by configuring the role in API Gateway settings
+  # access_log_settings {
+  #   destination_arn = aws_cloudwatch_log_group.api_gateway_rest.arn
+  #   format = jsonencode({
+  #     requestId      = "$context.requestId"
+  #     ip             = "$context.identity.sourceIp"
+  #     requestTime    = "$context.requestTime"
+  #     httpMethod     = "$context.httpMethod"
+  #     routeKey       = "$context.routeKey"
+  #     status         = "$context.status"
+  #     responseLength = "$context.responseLength"
+  #     errorMessage   = "$context.error.message"
+  #   })
+  # }
 
   default_route_settings {
     throttling_burst_limit = 100

@@ -30,3 +30,16 @@ Thumbs.db
 # Build
 dist/
 build/
+
+# Terraform
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/terraform.tfvars
+terraform/tfplan
+terraform/placeholder.zip
+
+# Lambda build artifacts
+lambda/dist/
+lambda/*.zip

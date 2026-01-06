@@ -43,7 +43,7 @@ resource "aws_cloudwatch_log_group" "stream_processor" {
 resource "aws_lambda_function" "api" {
   function_name = "${local.name_prefix}-api"
   role          = aws_iam_role.lambda_execution.arn
-  handler       = "index.handler"
+  handler       = "api.handler"
   runtime       = var.lambda_runtime
   memory_size   = var.lambda_memory_size
   timeout       = var.lambda_timeout
@@ -54,12 +54,18 @@ resource "aws_lambda_function" "api" {
 
   environment {
     variables = {
-      NODE_ENV                = var.environment
-      DYNAMODB_TABLE          = aws_dynamodb_table.main.name
-      CONNECTIONS_TABLE       = aws_dynamodb_table.connections.name
-      SECRETS_ARN             = aws_secretsmanager_secret.app_config.arn
-      WEBSOCKET_API_ENDPOINT  = "https://${aws_apigatewayv2_api.websocket.id}.execute-api.${var.aws_region}.amazonaws.com/${aws_apigatewayv2_stage.websocket.name}"
-      CORS_ORIGINS            = join(",", local.cors_origins)
+      NODE_ENV                  = var.environment
+      DYNAMODB_TABLE_MAIN       = aws_dynamodb_table.main.name
+      DYNAMODB_TABLE_CONNECTIONS = aws_dynamodb_table.connections.name
+      WEBSOCKET_ENDPOINT        = "https://${aws_apigatewayv2_api.websocket.id}.execute-api.${var.aws_region}.amazonaws.com/${aws_apigatewayv2_stage.websocket.name}"
+      JWT_SECRET                = var.jwt_secret
+      ADMIN_PASSWORD            = var.admin_password
+      ADMIN_WALLETS             = var.admin_wallets
+      X402_FACILITATOR_URL      = var.x402_facilitator_url
+      X402_NETWORK              = var.x402_network
+      X402_RECEIVER_ADDRESS     = var.x402_receiver_address
+      CARD_PRICE                = var.card_price
+      FRONTEND_URL              = "https://${var.frontend_domain}"
     }
   }
 
@@ -82,7 +88,7 @@ resource "aws_lambda_function" "api" {
 resource "aws_lambda_function" "ws_connect" {
   function_name = "${local.name_prefix}-ws-connect"
   role          = aws_iam_role.lambda_execution.arn
-  handler       = "connect.handler"
+  handler       = "wsConnect.handler"
   runtime       = var.lambda_runtime
   memory_size   = 256
   timeout       = 10
@@ -92,10 +98,11 @@ resource "aws_lambda_function" "ws_connect" {
 
   environment {
     variables = {
-      NODE_ENV          = var.environment
-      DYNAMODB_TABLE    = aws_dynamodb_table.main.name
-      CONNECTIONS_TABLE = aws_dynamodb_table.connections.name
-      SECRETS_ARN       = aws_secretsmanager_secret.app_config.arn
+      NODE_ENV                  = var.environment
+      DYNAMODB_TABLE_MAIN       = aws_dynamodb_table.main.name
+      DYNAMODB_TABLE_CONNECTIONS = aws_dynamodb_table.connections.name
+      JWT_SECRET                = var.jwt_secret
+      ADMIN_WALLETS             = var.admin_wallets
     }
   }
 
@@ -118,7 +125,7 @@ resource "aws_lambda_function" "ws_connect" {
 resource "aws_lambda_function" "ws_disconnect" {
   function_name = "${local.name_prefix}-ws-disconnect"
   role          = aws_iam_role.lambda_execution.arn
-  handler       = "disconnect.handler"
+  handler       = "wsDisconnect.handler"
   runtime       = var.lambda_runtime
   memory_size   = 256
   timeout       = 10
@@ -128,8 +135,8 @@ resource "aws_lambda_function" "ws_disconnect" {
 
   environment {
     variables = {
-      NODE_ENV          = var.environment
-      CONNECTIONS_TABLE = aws_dynamodb_table.connections.name
+      NODE_ENV                  = var.environment
+      DYNAMODB_TABLE_CONNECTIONS = aws_dynamodb_table.connections.name
     }
   }
 
@@ -151,7 +158,7 @@ resource "aws_lambda_function" "ws_disconnect" {
 resource "aws_lambda_function" "ws_message" {
   function_name = "${local.name_prefix}-ws-message"
   role          = aws_iam_role.lambda_execution.arn
-  handler       = "message.handler"
+  handler       = "wsMessage.handler"
   runtime       = var.lambda_runtime
   memory_size   = var.lambda_memory_size
   timeout       = var.lambda_timeout
@@ -161,11 +168,12 @@ resource "aws_lambda_function" "ws_message" {
 
   environment {
     variables = {
-      NODE_ENV                = var.environment
-      DYNAMODB_TABLE          = aws_dynamodb_table.main.name
-      CONNECTIONS_TABLE       = aws_dynamodb_table.connections.name
-      SECRETS_ARN             = aws_secretsmanager_secret.app_config.arn
-      WEBSOCKET_API_ENDPOINT  = "https://${aws_apigatewayv2_api.websocket.id}.execute-api.${var.aws_region}.amazonaws.com/${aws_apigatewayv2_stage.websocket.name}"
+      NODE_ENV                  = var.environment
+      DYNAMODB_TABLE_MAIN       = aws_dynamodb_table.main.name
+      DYNAMODB_TABLE_CONNECTIONS = aws_dynamodb_table.connections.name
+      WEBSOCKET_ENDPOINT        = "https://${aws_apigatewayv2_api.websocket.id}.execute-api.${var.aws_region}.amazonaws.com/${aws_apigatewayv2_stage.websocket.name}"
+      JWT_SECRET                = var.jwt_secret
+      ADMIN_WALLETS             = var.admin_wallets
     }
   }
 
@@ -189,7 +197,7 @@ resource "aws_lambda_function" "ws_message" {
 resource "aws_lambda_function" "stream_processor" {
   function_name = "${local.name_prefix}-stream-processor"
   role          = aws_iam_role.lambda_execution.arn
-  handler       = "stream.handler"
+  handler       = "streamProcessor.handler"
   runtime       = var.lambda_runtime
   memory_size   = 256
   timeout       = 60
@@ -199,9 +207,9 @@ resource "aws_lambda_function" "stream_processor" {
 
   environment {
     variables = {
-      NODE_ENV                = var.environment
-      CONNECTIONS_TABLE       = aws_dynamodb_table.connections.name
-      WEBSOCKET_API_ENDPOINT  = "https://${aws_apigatewayv2_api.websocket.id}.execute-api.${var.aws_region}.amazonaws.com/${aws_apigatewayv2_stage.websocket.name}"
+      NODE_ENV                  = var.environment
+      DYNAMODB_TABLE_CONNECTIONS = aws_dynamodb_table.connections.name
+      WEBSOCKET_ENDPOINT        = "https://${aws_apigatewayv2_api.websocket.id}.execute-api.${var.aws_region}.amazonaws.com/${aws_apigatewayv2_stage.websocket.name}"
     }
   }
 
@@ -234,7 +242,7 @@ resource "aws_lambda_event_source_mapping" "dynamodb_stream" {
         dynamodb = {
           NewImage = {
             entityType = {
-              S = ["GAME", "CARD"]
+              S = ["GAME", "CARD", "WINNER"]
             }
           }
         }

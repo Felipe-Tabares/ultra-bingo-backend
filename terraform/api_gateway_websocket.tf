@@ -96,63 +96,63 @@ resource "aws_apigatewayv2_route" "ws_leave_game" {
 # Admin: Start game
 resource "aws_apigatewayv2_route" "ws_admin_start" {
   api_id    = aws_apigatewayv2_api.websocket.id
-  route_key = "admin:start-game"
+  route_key = "admin-start-game"
   target    = "integrations/${aws_apigatewayv2_integration.ws_message.id}"
 }
 
 # Admin: Pause game
 resource "aws_apigatewayv2_route" "ws_admin_pause" {
   api_id    = aws_apigatewayv2_api.websocket.id
-  route_key = "admin:pause-game"
+  route_key = "admin-pause-game"
   target    = "integrations/${aws_apigatewayv2_integration.ws_message.id}"
 }
 
 # Admin: Resume game
 resource "aws_apigatewayv2_route" "ws_admin_resume" {
   api_id    = aws_apigatewayv2_api.websocket.id
-  route_key = "admin:resume-game"
+  route_key = "admin-resume-game"
   target    = "integrations/${aws_apigatewayv2_integration.ws_message.id}"
 }
 
 # Admin: End game
 resource "aws_apigatewayv2_route" "ws_admin_end" {
   api_id    = aws_apigatewayv2_api.websocket.id
-  route_key = "admin:end-game"
+  route_key = "admin-end-game"
   target    = "integrations/${aws_apigatewayv2_integration.ws_message.id}"
 }
 
 # Admin: Clear game
 resource "aws_apigatewayv2_route" "ws_admin_clear" {
   api_id    = aws_apigatewayv2_api.websocket.id
-  route_key = "admin:clear-game"
+  route_key = "admin-clear-game"
   target    = "integrations/${aws_apigatewayv2_integration.ws_message.id}"
 }
 
 # Admin: Call number
 resource "aws_apigatewayv2_route" "ws_admin_call" {
   api_id    = aws_apigatewayv2_api.websocket.id
-  route_key = "admin:call-number"
+  route_key = "admin-call-number"
   target    = "integrations/${aws_apigatewayv2_integration.ws_message.id}"
 }
 
 # Admin: Set game mode
 resource "aws_apigatewayv2_route" "ws_admin_mode" {
   api_id    = aws_apigatewayv2_api.websocket.id
-  route_key = "admin:set-game-mode"
+  route_key = "admin-set-game-mode"
   target    = "integrations/${aws_apigatewayv2_integration.ws_message.id}"
 }
 
 # Admin: Verify winner
 resource "aws_apigatewayv2_route" "ws_admin_verify" {
   api_id    = aws_apigatewayv2_api.websocket.id
-  route_key = "admin:verify-winner"
+  route_key = "admin-verify-winner"
   target    = "integrations/${aws_apigatewayv2_integration.ws_message.id}"
 }
 
 # Admin: Reject winner
 resource "aws_apigatewayv2_route" "ws_admin_reject" {
   api_id    = aws_apigatewayv2_api.websocket.id
-  route_key = "admin:reject-winner"
+  route_key = "admin-reject-winner"
   target    = "integrations/${aws_apigatewayv2_integration.ws_message.id}"
 }
 
@@ -165,18 +165,20 @@ resource "aws_apigatewayv2_stage" "websocket" {
   name        = var.environment
   auto_deploy = true
 
-  access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.api_gateway_websocket.arn
-    format = jsonencode({
-      requestId     = "$context.requestId"
-      ip            = "$context.identity.sourceIp"
-      connectionId  = "$context.connectionId"
-      requestTime   = "$context.requestTime"
-      routeKey      = "$context.routeKey"
-      status        = "$context.status"
-      errorMessage  = "$context.error.message"
-    })
-  }
+  # NOTE: access_log_settings requires API Gateway account-level CloudWatch role
+  # This can be enabled later by configuring the role in API Gateway settings
+  # access_log_settings {
+  #   destination_arn = aws_cloudwatch_log_group.api_gateway_websocket.arn
+  #   format = jsonencode({
+  #     requestId     = "$context.requestId"
+  #     ip            = "$context.identity.sourceIp"
+  #     connectionId  = "$context.connectionId"
+  #     requestTime   = "$context.requestTime"
+  #     routeKey      = "$context.routeKey"
+  #     status        = "$context.status"
+  #     errorMessage  = "$context.error.message"
+  #   })
+  # }
 
   default_route_settings {
     throttling_burst_limit = 500
